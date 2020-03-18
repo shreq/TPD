@@ -1,5 +1,5 @@
 import numpy
-from criterion import Criterion
+from criteria.criterion import Criterion
 
 
 class Optimistic(Criterion):
@@ -9,5 +9,6 @@ class Optimistic(Criterion):
 
     def evaluate(self):
         max_for_row = self.data.max(axis=1)
-        max_for_max = max_for_row.max()
-        return numpy.where(max_for_row == max_for_max)[0] + 1
+        return numpy.where(
+            max_for_row == max_for_row.max()
+        )[0] + 1

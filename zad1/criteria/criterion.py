@@ -6,3 +6,6 @@ class Criterion:
 
     def evaluate(self):
         raise Exception("Needs implementation in child class")
+
+    def modifiers(self):
+        return ""

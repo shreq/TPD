@@ -1,5 +1,5 @@
 import numpy
-from criterion import Criterion
+from criteria.criterion import Criterion
 
 
 class Wald(Criterion):
@@ -9,5 +9,6 @@ class Wald(Criterion):
 
     def evaluate(self):
         min_for_row = self.data.min(axis=1)
-        max_for_min = min_for_row.max()
-        return numpy.where(min_for_row == max_for_min)[0] + 1
+        return numpy.where(
+            min_for_row == min_for_row.max()
+        )[0] + 1
