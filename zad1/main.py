@@ -22,13 +22,14 @@ def array_to_string(criterion):
 
 
 data = pandas.read_csv("data.csv")
-variants = data[1:]
-probabilities = data.iloc[0].values.tolist()
+variants = data[:-2]
+probabilities = data.iloc[-2].values.tolist()
+gamma = data.iat[-1, 0]
 
 criteria = [
     Wald(variants),
     Optimistic(variants),
-    Hurwicz(variants),
+    Hurwicz(variants, gamma),
     BayesLaplace(variants),
     BayesLaplace(variants, probabilities),
     Savage(variants)

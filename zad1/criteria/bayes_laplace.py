@@ -8,7 +8,7 @@ class BayesLaplace(Criterion):
     def __init__(self, data, probability=None):
         super().__init__(data)
         if probability is None:
-            probability = [round(1 / len(data.columns), 3) for x in data.columns]
+            probability = [round(1 / len(data.columns), 3) for _ in data.columns]
         self.probability = probability
 
     def evaluate(self):
