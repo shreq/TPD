@@ -13,5 +13,5 @@ class Savage(Criterion):
         subtracted = self.data - max_for_column
         max_for_row = subtracted.max()
         return numpy.where(
-            max_for_row == max_for_row.max()
+            max_for_row == max_for_row.min()
         )[0]
