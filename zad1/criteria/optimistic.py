@@ -11,4 +11,4 @@ class Optimistic(Criterion):
         max_for_row = self.data.max(axis=1)
         return numpy.where(
             max_for_row == max_for_row.max()
-        )[0] + 1
+        )[0]

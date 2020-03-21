@@ -7,15 +7,16 @@ class BayesLaplace(Criterion):
 
     def __init__(self, data, probability=None):
         super().__init__(data)
-        self.probability = probability if probability is not None \
-            else [0.2, 0.2, 0.2, 0.2, 0.2]
+        if probability is None:
+            probability = [1 / len(data.columns) for x in data.columns]
+        self.probability = probability
 
     def evaluate(self):
         weighed = self.data * self.probability
         summed = weighed.sum(axis=1)
         return numpy.where(
             summed == summed.max()
-        )[0] + 1
+        )[0]
 
     def modifiers(self):
         return " : " + self.probability.__str__()

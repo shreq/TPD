@@ -11,4 +11,4 @@ class Wald(Criterion):
         min_for_row = self.data.min(axis=1)
         return numpy.where(
             min_for_row == min_for_row.max()
-        )[0] + 1
+        )[0]

@@ -15,7 +15,7 @@ class Hurwicz(Criterion):
         weighed = max_for_row.add(min_for_row, fill_value=0)
         return numpy.where(
             weighed == weighed.max()
-        )[0] + 1
+        )[0]
 
     def modifiers(self):
         return " : " + self.caution_factor.__str__()
