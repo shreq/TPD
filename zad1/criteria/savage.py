@@ -10,8 +10,8 @@ class Savage(Criterion):
 
     def evaluate(self):
         max_for_column = self.data.max()
-        subtracted = self.data - max_for_column
-        max_for_row = subtracted.max()
+        subtracted = max_for_column - self.data
+        max_for_row = subtracted.max(axis=1)
         return numpy.where(
             max_for_row == max_for_row.min()
         )[0]
