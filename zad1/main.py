@@ -22,7 +22,8 @@ def array_to_string(criterion):
 
 
 data = pandas.read_csv("data.csv")
-variants = data[:-2]
+variants = data[:-2] * (-1)
+print(variants)
 probabilities = data.iloc[-2].values.tolist()
 gamma = data.iat[-1, 0]
 
