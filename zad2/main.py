@@ -33,20 +33,25 @@ def reduce_dominated(matrix):
     return reduced
 
 
-rules = pandas.read_csv('rules.csv')
+data = pandas.read_csv('rules.csv')
+discardA = data.iloc[-2][0]
+discardB = data.iloc[-1][0]
+rules = data[:-2]
 rules.index = rules.columns.values
 
-print(rules)
 print()
 print("There is " + ("" if saddle_point(rules) else "no ") + "saddle point")
 print(("Reduced " if reduce_dominated(rules) else "No ") + "dominated rows/columns")
+
+rules.drop(labels=discardA, inplace=True)
+rules.drop(columns=discardB, inplace=True)
 
 minValue = rules.values.min()
 
 if minValue < 0:
     rules += -minValue
 
-x = pulp.LpVariable.dicts("x", rules.index, lowBound=0)
+x = pulp.LpVariable.dicts("x", rules.columns, lowBound=0)
 modelA = pulp.LpProblem("A", pulp.LpMinimize)
 modelA += pulp.lpSum(x)
 for _, rowValue in rules.iterrows():
