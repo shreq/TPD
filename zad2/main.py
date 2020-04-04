@@ -1,5 +1,5 @@
 import pandas
-import scipy
+import pulp
 
 
 def saddle_point(matrix):
@@ -19,21 +19,27 @@ def is_dominant(master, slave):
 
 
 def reduce_dominated(matrix):
+    reduced = False
     for master_label, master_content in matrix.iterrows():
         for slave_label, slave_content in matrix.iterrows():
             if master_label != slave_label and is_dominant(master_content, slave_content):
                 matrix.drop(labels=slave_label, inplace=True)
+                reduced = True
     for master_label, master_content in matrix.iteritems():
         for slave_label, slave_content in matrix.iteritems():
             if master_label != slave_label and is_dominant(master_content, slave_content):
                 matrix.drop(columns=slave_label, inplace=True)
+                reduced = True
+    return reduced
 
 
 rules = pandas.read_csv('rules.csv')
 rules.index = rules.columns.values
 
 print("There is " + ("" if saddle_point(rules) else "no ") + "saddle point")
+print(("Reduced " if reduce_dominated(rules) else "No ") + "dominated rows/columns")
 print(rules)
-print()
-reduce_dominated(rules)
-print(rules)
+
+x = pulp.LpVariable.dicts("x", rules.index, lowBound=0)
+model = pulp.LpProblem("AAAAAAAA", pulp.LpMaximize)
+print(x, '\n\n', model)
