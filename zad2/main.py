@@ -37,10 +37,15 @@ def reduce_dominated(matrix):
 
 
 data = pandas.read_csv('rules.csv')
+
 discardA = data.iloc[-2][0]
 discardB = data.iloc[-1][0]
-rules = data[:-2]
+
+rules = data[:-2].astype("float64")
 rules.index = rules.columns.values
+
+rules.drop(labels=discardA, inplace=True)
+rules.drop(columns=discardB, inplace=True)
 
 saddle_point_exist = saddle_point(rules)
 if saddle_point_exist:
@@ -55,9 +60,6 @@ if reduce_dominated(rules):
           str(rules))
 else:
     print("No dominated rows/columns")
-
-rules.drop(labels=discardA, inplace=True)
-rules.drop(columns=discardB, inplace=True)
 
 minValue = rules.values.min()
 
