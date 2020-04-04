@@ -36,10 +36,41 @@ def reduce_dominated(matrix):
 rules = pandas.read_csv('rules.csv')
 rules.index = rules.columns.values
 
+print(rules)
+print()
 print("There is " + ("" if saddle_point(rules) else "no ") + "saddle point")
 print(("Reduced " if reduce_dominated(rules) else "No ") + "dominated rows/columns")
-print(rules)
+
+minValue = rules.values.min()
+
+if minValue < 0:
+    rules += -minValue
 
 x = pulp.LpVariable.dicts("x", rules.index, lowBound=0)
-model = pulp.LpProblem("AAAAAAAA", pulp.LpMaximize)
-print(x, '\n\n', model)
+modelA = pulp.LpProblem("A", pulp.LpMinimize)
+modelA += pulp.lpSum(x)
+for _, rowValue in rules.iterrows():
+    modelA += pulp.lpSum([x[label] * rowValue[label] for label in rowValue.index]) >= 1
+modelA.solve()
+
+y = pulp.LpVariable.dicts("y", rules.index, lowBound=0)
+modelB = pulp.LpProblem("B", pulp.LpMaximize)
+modelB += pulp.lpSum(y)
+for _, colValue in rules.iteritems():
+    modelB += pulp.lpSum([y[label] * colValue[label] for label in colValue.index]) <= 1
+modelB.solve()
+
+gameValue = 1 / sum([x.varValue for x in modelA.variables()])
+
+print("\nPlayer A stategy:")
+for var in modelA.variables():
+    print(var.name + ": " + str(var.varValue * gameValue))
+
+print("\nPlayer B stategy:")
+for var in modelB.variables():
+    print(var.name + ": " + str(var.varValue * gameValue))
+
+if minValue < 0:
+    gameValue -= -minValue
+
+print("\nGame value: ", gameValue)
