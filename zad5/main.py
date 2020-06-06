@@ -43,26 +43,20 @@ class Processor:
     def process(self, time):
         if self.current_task is not None:
             time_left = self.current_task.process(time)
-            if time_left > 0:
+            if time_left >= 0:
                 self.elapsed_time += (time - time_left)
-                if len(self.queue) > 0:
-                    self.current_task = self.dequeue()
-                    self.process(time_left)
-                else:
-                    self.current_task = None
-                    self.finish()
-            elif time_left == 0:
-                self.elapsed_time += time
-                if len(self.queue) > 0:
-                    self.current_task = self.dequeue()
-                else:
-                    self.current_task = None
-                    self.finish()
+                self.current_task = self.dequeue()
+                self.process(time_left)
             else:
                 self.elapsed_time += time
+        else:
+            self.finish()
 
     def dequeue(self):
-        return hq.heappop(self.queue)[1]
+        if len(self.queue) > 0:
+            return hq.heappop(self.queue)[1]
+        else:
+            return None
 
     def enqueue(self, task):
         if self.current_task is not None:
@@ -81,8 +75,8 @@ class Processor:
 
 
 t1 = Task(1, 2, 4)
-t2 = Task(2, 2, 4)
-t3 = Task(3, 4, 4)
+t2 = Task(2, 4, 4)
+t3 = Task(3, 2, 4)
 t4 = Task(4, 2, 4)
 t5 = Task(5, 2, 4)
 list = [t1, t2, t3, t4, t5]
