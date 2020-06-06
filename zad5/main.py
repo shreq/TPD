@@ -1,96 +1,27 @@
-import heapq as hq
+from random import randint
 
+import pandas
 
-class Task:
-    ID = 1
+from processor import Processor
+from task import Task
 
-    def __init__(self, priority, start_time, time_to_finish):
-        self.priority = priority
-        self.id = Task.ID
-        Task.ID += 1
-        self.start_time = start_time
-        self.time_to_finish = time_to_finish
+processor = Processor(10)
+tasks = [Task(randint(1, 10), randint(1, 10), randint(1, 10)) for i in range(10)]
 
-    def __lt__(self, other):
-        return self.priority < other.priority
+print(
+    "Tasks:\n" + pandas.DataFrame(
+        [[task.priority, task.start_time, task.time_to_finish] for task in tasks],
+        columns=['priority', 'start_time', 'time_to_finish'],
+        index=[task.id for task in tasks]
+    ).to_string()
+)
+print("\nProcessing:")
 
-    def __str__(self):
-        return 'Task_' + str(self.id)
+task = tasks.pop(0)
+processor.enqueue(task)
+while len(tasks) > 0:
+    task = tasks.pop(0)
+    processor.process(task.start_time)
+    processor.enqueue(task)
 
-    def process(self, time):
-        if self.time_to_finish > time:
-            self.time_to_finish -= time
-            return -1
-        else:
-            self.finish()
-            return time - self.time_to_finish
-
-    def finish(self):
-        print(str(self) + ' finished')
-
-    def switch(self, other):
-        print(str(self) + ' switched to ' + str(other))
-
-
-class Processor:
-
-    def __init__(self, max_priority):
-        self.queue = []
-        self.elapsed_time = 0
-        self.current_task = None
-        self.max_priority = max_priority
-
-    def process(self, time):
-        if self.current_task is not None:
-            time_left = self.current_task.process(time)
-            if time_left >= 0:
-                self.elapsed_time += (time - time_left)
-                self.current_task = self.dequeue()
-                self.process(time_left)
-            else:
-                self.elapsed_time += time
-        else:
-            self.finish()
-
-    def dequeue(self):
-        if len(self.queue) > 0:
-            return hq.heappop(self.queue)[1]
-        else:
-            return None
-
-    def enqueue(self, task):
-        if self.current_task is not None:
-            if self.current_task.priority < task.priority:
-                self.current_task.switch(task)
-                hq.heappush(self.queue, (self.max_priority - self.current_task.priority, self.current_task))
-                self.current_task = task
-            else:
-                hq.heappush(self.queue, (self.max_priority - task.priority, task))
-        else:
-            self.current_task = task
-
-    def finish(self):
-        print("Processing finished after " + str(self.elapsed_time) + " seconds")
-        self.elapsed_time = 0
-
-
-t1 = Task(1, 2, 4)
-t2 = Task(2, 4, 4)
-t3 = Task(3, 2, 4)
-t4 = Task(4, 2, 4)
-t5 = Task(5, 2, 4)
-list = [t1, t2, t3, t4, t5]
-
-p = Processor(10)
-
-task = list.pop(0)
-p.enqueue(task)
-while len(list) > 0:
-    task = list.pop(0)
-    p.process(task.start_time)
-    p.enqueue(task)
-
-p.process(100)
-
-
-
+processor.process(100)
